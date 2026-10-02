@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>agent-homelab — setup guide</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .step { grid-column: 1/13; border-top: 1.5px solid var(--ink); padding-top: var(--mod); }
+  .step:first-of-type { border-top: none; padding-top: 0; }
+  .step-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: calc(var(--mod)/2); }
+  .step-num { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 0.04em; }
+  .step-title { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+  .step-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border: 1px solid var(--hairline); padding: 2px 7px; border-radius: 3px; }
+  .step-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 760px) { .step-grid { grid-template-columns: 1fr; } }
+  code.inline { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; background: var(--hairline); padding: 1px 5px; border-radius: 3px; }
+  pre.cmd { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; line-height: 1.6; background: var(--hairline); border-radius: 4px; padding: 10px 12px; overflow-x: auto; white-space: pre-wrap; }
+  .prompt { border-left: 3px solid var(--accent); padding-left: 12px; margin-top: 8px; }
+  .prompt p.t-label { color: var(--accent); margin-bottom: 4px; }
+  .linkrow { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <p class="t-label" style="grid-column:1/7">agent-homelab</p>
+  <p class="t-label" style="grid-column:10/13"><a href="index.html" style="border:none">← deck</a></p>
+
+  <h1 class="t-display" style="grid-column:1/11">Setup guide.</h1>
+  <p class="t-body" style="grid-column:1/8">Exact links, exact commands, in order. Required steps first, optional upgrades after. Once your agent and network are up, hand the rest to your agent — a sample prompt is included for each step.</p>
+
+  <hr class="rule">
+
+  <p class="t-label" style="grid-column:1/13">Required</p>
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-head"><span class="step-num">01</span><span class="step-title">An always-on machine</span><span class="step-tag">hardware</span></div>
+    <p class="t-body">Any computer you can leave powered on 24/7: a spare Mac mini, an old laptop, a NUC, a cheap home server. No purchase needed if you already own one.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-head"><span class="step-num">02</span><span class="step-title">Install an agent — Hermes Agent</span><span class="step-tag">software</span></div>
+    <div class="step-grid">
+      <div>
+        <p class="t-body">Open-source, self-hosted agent framework. Any model provider, same session across every surface.</p>
+        <div class="linkrow">
+          <a href="https://github.com/NousResearch/hermes-agent">GitHub repo</a>
+          <a href="https://hermes-agent.nousresearch.com/docs/">Docs</a>
+        </div>
+      </div>
+      <div>
+        <pre class="cmd">curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+hermes setup
+hermes</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-head"><span class="step-num">03</span><span class="step-title">Join a private network — Tailscale</span><span class="step-tag">network</span></div>
+    <div class="step-grid">
+      <div>
+        <p class="t-body">Mesh VPN. Every device gets a stable private address reachable from anywhere — nothing opened to the public internet.</p>
+        <div class="linkrow">
+          <a href="https://tailscale.com/download">Download</a>
+          <a href="https://tailscale.com/docs/install">Install docs</a>
+          <a href="https://www.youtube.com/watch?v=eNn2tT-lrz4">Explainer video ↗ (3rd-party)</a>
+        </div>
+      </div>
+      <div class="prompt">
+        <p class="t-label">Prompt for your agent</p>
+        <p class="t-body">"Install Tailscale on this machine, walk me through logging in, confirm it's connected to my tailnet, and show me this machine's Tailscale IP and hostname."</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+  <p class="t-label" style="grid-column:1/13">Recommended</p>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-head"><span class="step-num">04</span><span class="step-title">Reach it from your phone</span><span class="step-tag">access</span></div>
+    <div class="step-grid">
+      <div>
+        <p class="t-body">Wire a messaging bot (e.g. Telegram) into your agent so you can message it from anywhere. Configured inside Hermes itself — see the messaging section of the docs.</p>
+        <div class="linkrow"><a href="https://hermes-agent.nousresearch.com/docs/">Hermes messaging docs</a></div>
+      </div>
+      <div class="prompt">
+        <p class="t-label">Prompt for your agent</p>
+        <p class="t-body">"Set up a Telegram bot for yourself using BotFather, wire it into your messaging config, and confirm I can message you from my phone."</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step">
+    <div class="step-head"><span class="step-num">05</span><span class="step-title">Keep terminal sessions alive — herdr</span><span class="step-tag">tooling</span></div>
+    <div class="step-grid">
+      <div>
+        <p class="t-body">Agent-aware terminal multiplexer. Coding-agent sessions (Claude Code, Codex, etc.) keep running after you disconnect; reattach from anywhere, including over SSH.</p>
+        <div class="linkrow">
+          <a href="https://herdr.dev/">Site</a>
+          <a href="https://herdr.dev/docs/install/">Install docs</a>
+        </div>
+        <pre class="cmd">brew install herdr
+# or
+curl -fsSL https://herdr.dev/install | sh</pre>
+      </div>
+      <div>
+        <p class="t-body">For iOS/Android, pair it with <strong>Moshi</strong> — an SSH/Mosh terminal client built for agent sessions (tmux/herdr aware, Live Activities, Apple Watch approvals).</p>
+        <div class="linkrow">
+          <a href="https://getmoshi.app/">Site</a>
+          <a href="https://apps.apple.com/us/app/moshi-ssh-mosh-terminal/id6757859949">App Store</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step">
+    <div class="step-head"><span class="step-num">06</span><span class="step-title">Full remote screen — Jump Desktop</span><span class="step-tag">access</span></div>
+    <div class="step-grid">
+      <div>
+        <p class="t-body">Remote desktop app for when a task needs a GUI, not just a terminal. Auto-detects your Tailscale connection — no port forwarding needed.</p>
+        <div class="linkrow">
+          <a href="https://jumpdesktop.com/">Site</a>
+          <a href="https://jumpdesktop.com/pricing-plans.html">Pricing</a>
+        </div>
+      </div>
+      <div>
+        <p class="t-body" style="color:var(--muted)">Free for Windows clients; Mac/iOS/Android plans from roughly $7.49/user/month. A free tier covers light personal use.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+  <p class="t-label" style="grid-column:1/13">Optional upgrades</p>
+
+  <!-- STEP 7 -->
+  <div class="step">
+    <div class="step-head"><span class="step-num">07</span><span class="step-title">Local models — Ollama</span><span class="step-tag">privacy</span></div>
+    <div class="step-grid">
+      <div>
+        <p class="t-body">Run open models on your own hardware. No API key, nothing leaves your network. Good fallback when cloud providers are down.</p>
+        <div class="linkrow"><a href="https://ollama.com/download">Download</a></div>
+        <pre class="cmd">curl -fsSL https://ollama.com/install.sh | sh
+ollama pull llama3.1
+ollama run llama3.1</pre>
+      </div>
+      <div class="prompt">
+        <p class="t-label">Prompt for your agent</p>
+        <p class="t-body">"Install Ollama on this machine, pull a solid general-purpose model (llama3.1 or qwen2.5 are good defaults), start the Ollama server, and give me the local endpoint so I can point a tool at it. Also set it up to run on this machine's Tailscale address so I can reach it from my other devices."</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step">
+    <div class="step-head"><span class="step-num">08</span><span class="step-title">Own your memory — Hindsight</span><span class="step-tag">privacy</span></div>
+    <div class="step-grid">
+      <div>
+        <p class="t-body">Self-hosted long-term memory for your agent. Runs fully locally against Ollama — no cloud, no API keys, the record of your conversations stays on your hardware.</p>
+        <div class="linkrow">
+          <a href="https://github.com/vectorize-io/hindsight">GitHub repo</a>
+          <a href="https://hindsight.vectorize.io/blog/2026/03/10/run-hindsight-with-ollama">Run it with Ollama ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step">
+    <div class="step-head"><span class="step-num">09</span><span class="step-title">Ride out power blips — UPS</span><span class="step-tag">resilience</span></div>
+    <div class="step-grid">
+      <div>
+        <p class="t-body">A small battery backup keeps the machine up through brief outages so a task doesn't die mid-run. Any UPS rated for your machine's wattage works.</p>
+        <div class="linkrow"><a href="https://www.cyberpowersystems.com/products/ups/battery-backup/">CyberPower battery backups ↗</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step">
+    <div class="step-head"><span class="step-num">10</span><span class="step-title">Recover from a hard lockout — KVM-over-IP</span><span class="step-tag">resilience</span></div>
+    <div class="step-grid">
+      <div>
+        <p class="t-body">If the machine crashes, hangs on boot, or SSH becomes unreachable, a hardware KVM gives you a physical keyboard/video/power connection over the network — the deepest recovery tier.</p>
+        <div class="linkrow">
+          <a href="https://www.gl-inet.com/en-us/products/gl-rm10">GL.iNet Comet Pro (GL-RM10) ↗ — ~$99</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+  <p class="t-body" style="grid-column:1/9; color:var(--muted)">General pattern once steps 2–3 are done: describe what you want to the agent running on the machine and let it install and configure the rest. It has a shell — that's the point.</p>
+
+</div>
+</body>
+</html>

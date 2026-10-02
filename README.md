@@ -2,7 +2,7 @@
 
 A lightweight guide to building your own always-on, self-hosted AI agent — the hardware, the network, and the access patterns, independent of which agent framework you pick.
 
-**[View the deck →](index.html)** (open locally or serve as a static site)
+**[View the deck →](index.html)** · **[Jump straight to the setup guide →](setup.html)** (open locally or serve as a static site)
 
 ## Why
 
