@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>agent-homelab — build your own always-on AI agent</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<main class="deck" id="deck">
+
+<!-- 01 TITLE -->
+<section class="slide active">
+  <p class="t-label slide-kicker">agent-homelab</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h1 class="t-display c1-9">Build your own<br>always-on<br><span class="accent">AI agent.</span></h1>
+    <div class="c1-6">
+      <p class="t-body">A lightweight guide to self-hosting an agent on hardware you control — what's required, what's optional, and why it's worth doing.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 WHY SELF-HOST -->
+<section class="slide">
+  <p class="t-label slide-kicker">01 · Why</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-display c1-13">A cloud chatbot answers.<br>A cloud sandbox is<br><span class="accent">someone else's box.</span></h2>
+    <p class="t-body c1-6">A self-hosted agent runs on hardware you control, with real access to your own files, tools, and network — not a hermetically sealed service you're renting by the message.</p>
+  </div>
+</section>
+
+<!-- 03 THREE INGREDIENTS -->
+<section class="slide">
+  <p class="t-label slide-kicker">02 · The shape</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-display c1-9">Three things.<br>That's it.</h2>
+    <dl class="tab c1-9">
+      <dt>01</dt><dd class="t-body">A machine that's always on</dd>
+      <dt>02</dt><dd class="t-body">Open agent software running on it</dd>
+      <dt>03</dt><dd class="t-body">A way to reach it from anywhere</dd>
+    </dl>
+    <p class="t-body c1-6" style="color:var(--muted)">Everything else in this guide is optional detail layered on top.</p>
+  </div>
+</section>
+
+<!-- 04 HARDWARE -->
+<section class="slide">
+  <p class="t-label slide-kicker">03 · Hardware</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-display c1-9">Always on<br>beats powerful.</h2>
+    <div class="c1-6">
+      <p class="t-body">Any machine that can stay powered on 24/7 works — a spare Mac mini, an old laptop, a NUC, a small home server. Turn it off and the agent is gone, unless it's running in the cloud.</p>
+    </div>
+    <dl class="tab c7-13">
+      <dt>Required</dt><dd class="t-body">A machine you leave running</dd>
+      <dt>Optional</dt><dd class="t-body">A small UPS (battery backup) so a power blip doesn't take it down mid-task</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- 05 REMOTE ACCESS TIERS -->
+<section class="slide">
+  <p class="t-label slide-kicker">04 · Remote access</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-sub c1-5">Pick your depth.</h2>
+    <ul class="bare c1-6">
+      <li><strong>Tier 1 — SSH + multiplexer</strong><span class="t-body">Terminal access that survives disconnects. Reattach from any device, including your phone.</span></li>
+      <li><strong>Tier 2 — Remote desktop</strong><span class="t-body">Full screen control over your private network when a task needs a GUI.</span></li>
+    </ul>
+    <ul class="bare c7-13">
+      <li><strong>Tier 3 — Hardware KVM</strong><span class="t-body">Physical keyboard, video, and power control. Recovers you even from a crash or a bad reboot that SSH can't reach.</span></li>
+    </ul>
+    <p class="t-body c1-6" style="color:var(--muted)">Most people only need tier one or two. Tier three is for when you've been burned once.</p>
+  </div>
+</section>
+
+<!-- 06 NETWORK -->
+<section class="slide">
+  <p class="t-label slide-kicker">05 · Network</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-display c1-9">A private mesh,<br><span class="accent">not open ports.</span></h2>
+    <svg class="diagram c1-13" viewBox="0 0 1160 260" role="img" aria-label="Private mesh network diagram">
+      <text x="20" y="26" class="d-text-s" letter-spacing="1.5">YOUR DEVICES</text>
+      <rect x="20" y="60" width="180" height="52" class="d-box"/><text x="36" y="82" class="d-text">Phone</text><text x="36" y="98" class="d-text-s">messaging app</text>
+      <rect x="20" y="128" width="180" height="52" class="d-box"/><text x="36" y="150" class="d-text">Laptop</text><text x="36" y="166" class="d-text-s">terminal · desktop app</text>
+      <path d="M200 86 H270 V146 H330" class="d-line-accent"/>
+      <path d="M200 154 H330" class="d-line-accent"/>
+      <rect x="330" y="118" width="170" height="64" class="d-box-accent"/>
+      <text x="350" y="146" class="d-text-on-accent">Mesh VPN</text>
+      <text x="350" y="164" class="d-text-on-accent" font-weight="400" font-size="11">no open ports</text>
+      <path d="M500 150 H580" class="d-line-accent"/>
+      <text x="580" y="26" class="d-text-s" letter-spacing="1.5">YOUR MACHINE</text>
+      <rect x="580" y="60" width="220" height="52" class="d-box"/><text x="596" y="82" class="d-text">Agent software</text><text x="596" y="98" class="d-text-s">always on</text>
+      <rect x="580" y="128" width="220" height="52" class="d-box"/><text x="596" y="150" class="d-text">Local models</text><text x="596" y="166" class="d-text-s">optional second machine</text>
+      <text x="880" y="26" class="d-text-s" letter-spacing="1.5">OUTBOUND ONLY</text>
+      <rect x="880" y="94" width="200" height="52" class="d-box"/><text x="896" y="116" class="d-text">Model provider APIs</text><text x="896" y="132" class="d-text-s">as needed, dials out</text>
+      <path d="M800 86 H840 V120 H880" class="d-line"/>
+      <path d="M800 154 H840 V120 H880" class="d-line"/>
+    </svg>
+    <p class="t-body c1-7" style="color:var(--muted)">From outside the mesh, the machine doesn't exist. No forwarded ports, no public endpoint.</p>
+  </div>
+</section>
+
+<!-- 07 DAILY ACCESS -->
+<section class="slide">
+  <p class="t-label slide-kicker">06 · Daily access</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-display c1-9">Same agent,<br>any door.</h2>
+    <dl class="tab c1-9">
+      <dt>Phone</dt><dd class="t-body">A messaging app bot — quick asks from anywhere</dd>
+      <dt>Desk</dt><dd class="t-body">Desktop app or terminal — deeper work sessions</dd>
+      <dt>Scripts</dt><dd class="t-body">An API endpoint on the mesh — other tools can call it too</dd>
+    </dl>
+    <p class="t-body c1-6" style="color:var(--muted)">One session store, one memory, whichever door you walk through.</p>
+  </div>
+</section>
+
+<!-- 08 BONUS: CODING AGENTS -->
+<section class="slide">
+  <p class="t-label slide-kicker">07 · Bonus capability</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-display c1-9">Run coding agents<br>on <span class="accent">your own box.</span></h2>
+    <div class="c1-6">
+      <p class="t-body">SSH into your always-on machine and run Claude Code, Codex, or any coding agent directly on it. Kick off a task, disconnect, check back in later from your phone.</p>
+    </div>
+    <dl class="tab c7-13">
+      <dt>Why it's better</dt><dd class="t-body">Your dotfiles, your packages, your disk — not a sealed cloud sandbox</dd>
+      <dt>Needs</dt><dd class="t-body">SSH + a terminal multiplexer so sessions survive disconnects</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- 09 LOCAL MODELS -->
+<section class="slide">
+  <p class="t-label slide-kicker">08 · Local models</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-display c1-9">A second machine,<br>open models.</h2>
+    <div class="c1-6">
+      <p class="t-body">An old laptop on the same mesh can run an open-model server and serve local inference. No API key, nothing leaves your network.</p>
+    </div>
+    <dl class="tab c7-13">
+      <dt>Use case</dt><dd class="t-body">Fallback when cloud providers are down</dd>
+      <dt>Use case</dt><dd class="t-body">Genuinely private for sensitive work</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- 10 PRIVACY -->
+<section class="slide">
+  <p class="t-label slide-kicker">09 · Privacy practices</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-display c1-9">Cheap habits,<br>real boundaries.</h2>
+    <ul class="bare c1-6">
+      <li><strong>Separate accounts</strong><span class="t-body">Dedicated email/workspace accounts per life domain — shopping, admin, health — so no single account sees everything.</span></li>
+    </ul>
+    <ul class="bare c7-13">
+      <li><strong>Own your memory</strong><span class="t-body">If your agent keeps long-term memory, run that layer locally so the record stays on hardware you own.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 11 WHY HERMES -->
+<section class="slide">
+  <p class="t-label slide-kicker">10 · Aside</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-display c1-9">Why I picked<br><span class="accent">Hermes Agent.</span></h2>
+    <div class="c1-6">
+      <p class="t-body">Open source, self-hosted, works with any model provider, meets me on whatever surface I'm using. Not the point of this guide — swap in whatever agent framework fits you. The homelab principles are the same either way.</p>
+    </div>
+    <dl class="tab c7-13">
+      <dt>Repo</dt><dd class="t-body"><a href="https://github.com/NousResearch/hermes-agent">github.com/NousResearch/hermes-agent</a></dd>
+      <dt>Docs</dt><dd class="t-body"><a href="https://hermes-agent.nousresearch.com/docs/">hermes-agent.nousresearch.com/docs</a></dd>
+    </dl>
+  </div>
+</section>
+
+<!-- 12 CHECKLIST -->
+<section class="slide">
+  <p class="t-label slide-kicker">11 · Checklist</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-sub c1-5">What you<br>actually need.</h2>
+    <ul class="bare c1-6">
+      <li><strong>Required</strong><span class="t-body">Always-on machine · open agent software · private network</span></li>
+    </ul>
+    <ul class="bare c7-13">
+      <li><strong>Upgrades, not prerequisites</strong><span class="t-body">UPS · hardware KVM · second machine for local models · terminal multiplexer</span></li>
+    </ul>
+    <p class="t-body c1-6" style="color:var(--muted)">Add each upgrade when you feel the pain it solves, not before.</p>
+  </div>
+</section>
+
+<!-- 13 START HERE -->
+<section class="slide">
+  <p class="t-label slide-kicker">Start here</p>
+  <p class="t-label slide-num" data-num></p>
+  <div class="slide-body">
+    <h2 class="t-display c1-13">Pick a machine.<br>Put an agent on it.<br><span class="accent">Connect it to a mesh.</span></h2>
+    <p class="t-body c1-6">Everything else is optional polish.</p>
+  </div>
+</section>
+
+</main>
+
+<div class="hud">
+  <button id="prev">← Prev</button>
+  <p class="t-label" id="counter"></p>
+  <button id="notesBtn" title="Open presenter view (or press N)">Notes</button>
+  <button id="theme">Light</button>
+  <button id="next">Next →</button>
+</div>
+
+<script src="notes.js"></script>
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+const chan = ('BroadcastChannel' in window) ? new BroadcastChannel('agent-homelab-deck') : null;
+let i = 0;
+
+function show(n, broadcast = true) {
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, k) => s.classList.toggle('active', k === i));
+  document.getElementById('counter').textContent = `${i + 1} / ${slides.length}`;
+  document.getElementById('progress').style.width = `${((i + 1) / slides.length) * 100}%`;
+  history.replaceState(null, '', '#' + (i + 1));
+  if (broadcast) {
+    if (chan) chan.postMessage({ type: 'slide', index: i });
+    localStorage.setItem('ahl-slide', String(i));
+  }
+}
+
+document.querySelectorAll('[data-num]').forEach((el, k) => el.textContent = String(k + 1).padStart(2, '0'));
+document.getElementById('prev').onclick = () => show(i - 1);
+document.getElementById('next').onclick = () => show(i + 1);
+document.getElementById('notesBtn').onclick = openPresenter;
+
+function openPresenter() {
+  window.open('presenter.html', 'agent-homelab-presenter', 'width=900,height=650');
+}
+
+addEventListener('keydown', e => {
+  if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+  if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+  if (e.key === 'n' || e.key === 'N') openPresenter();
+});
+
+// receive navigation from the presenter window
+if (chan) chan.onmessage = (e) => { if (e.data.type === 'slide') show(e.data.index, false); };
+addEventListener('storage', (e) => {
+  if (e.key === 'ahl-slide' && e.newValue !== null) show(parseInt(e.newValue), false);
+});
+
+const themeBtn = document.getElementById('theme');
+themeBtn.onclick = () => {
+  const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = next;
+  themeBtn.textContent = next === 'light' ? 'Dark' : 'Light';
+  localStorage.setItem('ahl-theme', next);
+};
+const saved = localStorage.getItem('ahl-theme');
+if (saved) { document.documentElement.dataset.theme = saved; themeBtn.textContent = saved === 'light' ? 'Dark' : 'Light'; }
+
+show(parseInt(location.hash.slice(1) || '1') - 1);
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Presenter view — agent-homelab</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { padding: 28px 5vw 84px; min-height: 100vh; }
+  .pv-head {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: 24px;
+    border-bottom: 1.5px solid var(--ink);
+    padding-bottom: 14px;
+    margin-bottom: 28px;
+  }
+  .pv-now { grid-column: 1 / 8; }
+  .pv-clock { grid-column: 9 / 13; text-align: left; }
+  .pv-clock .t-sub { font-variant-numeric: tabular-nums; }
+  .pv-vo {
+    font-size: clamp(20px, 2.6vw, 28px);
+    line-height: 1.5;
+    font-weight: 400;
+    max-width: 60ch;
+  }
+  .pv-next {
+    margin-top: 42px;
+    border-top: 1px solid var(--hairline);
+    padding-top: 14px;
+    color: var(--muted);
+  }
+  .pv-next p { max-width: 70ch; }
+  .warn { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="pv-head">
+  <div class="pv-now">
+    <p class="t-label">Now showing</p>
+    <p class="t-sub"><span id="num">–</span> · <span id="title">–</span></p>
+  </div>
+  <div class="pv-clock">
+    <p class="t-label">Elapsed · target 5:00</p>
+    <p class="t-sub" id="clock">0:00</p>
+  </div>
+</div>
+
+<p class="t-label accent" style="margin-bottom:14px">Voiceover</p>
+<p class="pv-vo" id="vo">Waiting for the deck. Open the deck in another window (it broadcasts automatically), or navigate from here with arrow keys.</p>
+
+<div class="pv-next">
+  <p class="t-label">Next up</p>
+  <p class="t-body" id="nextup">–</p>
+</div>
+
+<div class="hud">
+  <button id="prev">← Prev</button>
+  <p class="t-label" id="counter"></p>
+  <button id="resetClock">Reset clock</button>
+</div>
+
+<script src="notes.js"></script>
+<script>
+const chan = ('BroadcastChannel' in window) ? new BroadcastChannel('agent-homelab-deck') : null;
+let i = parseInt(localStorage.getItem('ahl-slide') || '0');
+
+function render() {
+  const n = NOTES[i] || { title: '?', vo: '' };
+  const next = NOTES[i + 1];
+  document.getElementById('num').textContent = String(i + 1).padStart(2, '0');
+  document.getElementById('title').textContent = n.title;
+  document.getElementById('vo').textContent = n.vo;
+  document.getElementById('nextup').textContent = next ? `${String(i + 2).padStart(2, '0')} · ${next.title}` : 'End of deck';
+  document.getElementById('counter').textContent = `${i + 1} / ${NOTES.length}`;
+}
+
+function go(n) {
+  i = Math.max(0, Math.min(NOTES.length - 1, n));
+  render();
+  if (chan) chan.postMessage({ type: 'slide', index: i });
+  localStorage.setItem('ahl-slide', String(i));
+}
+
+// receive from the deck window
+if (chan) chan.onmessage = (e) => { if (e.data.type === 'slide') { i = e.data.index; render(); } };
+addEventListener('storage', (e) => {
+  if (e.key === 'ahl-slide' && e.newValue !== null) { i = parseInt(e.newValue); render(); }
+});
+
+// presenter can also drive the deck
+document.getElementById('prev').onclick = () => go(i - 1);
+addEventListener('keydown', e => {
+  if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); go(i + 1); }
+  if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(i - 1); }
+});
+
+// elapsed clock — starts on first navigation, resettable
+let t0 = null;
+setInterval(() => {
+  if (t0 === null) return;
+  const s = Math.floor((Date.now() - t0) / 1000);
+  const m = Math.floor(s / 60), r = s % 60;
+  const el = document.getElementById('clock');
+  el.textContent = `${m}:${String(r).padStart(2, '0')}`;
+  el.classList.toggle('warn', s > 300);
+}, 500);
+const startClock = () => { if (t0 === null) t0 = Date.now(); };
+if (chan) { const orig = chan.onmessage; chan.onmessage = (e) => { startClock(); orig(e); }; }
+addEventListener('keydown', startClock);
+document.getElementById('resetClock').onclick = () => { t0 = Date.now(); };
+
+render();
+</script>
+</body>
+</html>
